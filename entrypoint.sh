@@ -6,7 +6,7 @@ set -e
 : "${OIDC_CLIENT_ID:?Missing OIDC_CLIENT_ID}"
 : "${OIDC_LOGOUT:?Missing OIDC_LOGOUT}"
 
-CONFIG_NAME="${REACT_APP_CONFIG:-midas-dev}"
+CONFIG_NAME="${REACT_APP_CONFIG}"
 mkdir -p /srv/slim/build/config
 
 # Render runtime config from template
