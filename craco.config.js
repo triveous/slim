@@ -1,5 +1,5 @@
-const CracoLessPlugin = require('craco-less')
-const CopyWebpackPlugin = require('copy-webpack-plugin')
+const CracoLessPlugin = require("craco-less");
+const CopyWebpackPlugin = require("copy-webpack-plugin");
 
 module.exports = {
   plugins: [
@@ -9,80 +9,91 @@ module.exports = {
         lessLoaderOptions: {
           lessOptions: {
             modifyVars: {
-              '@layout-header-background': '#007ea3',
-              '@primary-color': '#007ea3',
-              '@processing-color': '#8cb8c6',
-              '@success-color': '#3f9c35',
-              '@warning-color': '#eeaf30',
-              '@error-color': '#96172e',
-              '@font-size-base': '14px'
+              "@layout-header-background": "#007ea3",
+              "@primary-color": "#007ea3",
+              "@processing-color": "#8cb8c6",
+              "@success-color": "#3f9c35",
+              "@warning-color": "#eeaf30",
+              "@error-color": "#96172e",
+              "@font-size-base": "14px",
             },
-            javascriptEnabled: true
-          }
-        }
-      }
-    }
+            javascriptEnabled: true,
+          },
+        },
+      },
+    },
   ],
   webpack: {
     configure: (config, { env, paths }) => {
       config.resolve = {
         fallback: {
           fs: false,
-          path: false
+          path: false,
         },
-        extensions: ['.tsx', '.ts', '.js', '.wasm', '.json'],
+        extensions: [".tsx", ".ts", ".js", ".wasm", ".json"],
         /* We use this alias and the CopyPlugin below to support using the
          * dynamic-import version of Dicom Microscopy Viewer, but only when
          * building a PWA. When we build a package, we must use the bundled
          * version of Dicom Microscopy Viewer so we can produce a single file
          * for the viewer.
-        */
+         */
         alias: {
-          'dicom-microscopy-viewer':
-            'dicom-microscopy-viewer/dist/dynamic-import/dicomMicroscopyViewer.min.js'
-        }
-      }
+          "dicom-microscopy-viewer":
+            "dicom-microscopy-viewer/dist/dynamic-import/dicomMicroscopyViewer.min.js",
+        },
+      };
       config.plugins.push(
         // TO DO: remove hard coded path
         new CopyWebpackPlugin({
           patterns: [
             {
-              from: './node_modules/dicom-microscopy-viewer/dist/dynamic-import',
-              to: './static/js'
-            }
-          ]
+              from: "./node_modules/dicom-microscopy-viewer/dist/dynamic-import",
+              to: "./static/js",
+            },
+          ],
         })
-      )
-      config.target = 'web'
+      );
+      config.target = "web";
       config.experiments = {
-        asyncWebAssembly: true
-      }
-      return config
-    }
+        asyncWebAssembly: true,
+      };
+      // Ensure all emitted assets (chunks, workers) use the subpath, e.g. /wsi/
+      const base = process.env.PUBLIC_URL || "/";
+      config.output = config.output || {};
+      config.output.publicPath = base.endsWith("/") ? base : `${base}/`;
+      return config;
+    },
   },
   jest: {
     configure: (config, { env, paths }) => {
       config.transform = {
-        '^.+wasm.*\\.js$': '<rootDir>/src/__mocks__/emscriptenMock.js',
-        '\\.(wasm)$': '<rootDir>/src/__mocks__/wasmMock.js',
-        '\\.(css|less|sass|scss)$': '<rootDir>/src/__mocks__/styleMock.js',
-        '^.+\\.[t|j]sx?$': 'babel-jest'
-      }
+        "^.+wasm.*\\.js$": "<rootDir>/src/__mocks__/emscriptenMock.js",
+        "\\.(wasm)$": "<rootDir>/src/__mocks__/wasmMock.js",
+        "\\.(css|less|sass|scss)$": "<rootDir>/src/__mocks__/styleMock.js",
+        "^.+\\.[t|j]sx?$": "babel-jest",
+      };
       config.transformIgnorePatterns = [
-        'node_modules/(?!(ol|dicom-microscopy-viewer|dicomweb-client|@cornerstonejs|dicomicc|rbush|color-rgba|color-parse|color-name|color-space|quickselect|earcut)/)'
-      ]
+        "node_modules/(?!(ol|dicom-microscopy-viewer|dicomweb-client|@cornerstonejs|dicomicc|rbush|color-rgba|color-parse|color-name|color-space|quickselect|earcut)/)",
+      ];
       config.moduleNameMapper = {
-        'dicom-microscopy-viewer': '<rootDir>/src/__mocks__/dicomMicroscopyViewerMock.js',
-        '@cornerstonejs/codec-libjpeg-turbo-8bit/decodewasmjs': '@cornerstonejs/codec-libjpeg-turbo-8bit/dist/libjpegturbowasm_decode',
-        '@cornerstonejs/codec-libjpeg-turbo-8bit/decodewasm': '@cornerstonejs/codec-libjpeg-turbo-8bit/dist/libjpegturbowasm_decode.wasm',
-        '@cornerstonejs/codec-charls/decodewasmjs': '@cornerstonejs/codec-charls/dist/charlswasm_decode.js',
-        '@cornerstonejs/codec-charls/decodewasm': '@cornerstonejs/codec-charls/dist/charlswasm_decode.wasm',
-        '@cornerstonejs/codec-openjpeg/decodewasmjs': '@cornerstonejs/codec-openjpeg/dist/openjpegwasm_decode.js',
-        '@cornerstonejs/codec-openjpeg/decodewasm': '@cornerstonejs/codec-openjpeg/dist/openjpegwasm_decode.wasm'
-      }
-      config.setupFilesAfterEnv = ['<rootDir>/src/setupTests.tsx']
-      config.testEnvironment = 'jsdom'
-      return config
-    }
-  }
-}
+        "dicom-microscopy-viewer":
+          "<rootDir>/src/__mocks__/dicomMicroscopyViewerMock.js",
+        "@cornerstonejs/codec-libjpeg-turbo-8bit/decodewasmjs":
+          "@cornerstonejs/codec-libjpeg-turbo-8bit/dist/libjpegturbowasm_decode",
+        "@cornerstonejs/codec-libjpeg-turbo-8bit/decodewasm":
+          "@cornerstonejs/codec-libjpeg-turbo-8bit/dist/libjpegturbowasm_decode.wasm",
+        "@cornerstonejs/codec-charls/decodewasmjs":
+          "@cornerstonejs/codec-charls/dist/charlswasm_decode.js",
+        "@cornerstonejs/codec-charls/decodewasm":
+          "@cornerstonejs/codec-charls/dist/charlswasm_decode.wasm",
+        "@cornerstonejs/codec-openjpeg/decodewasmjs":
+          "@cornerstonejs/codec-openjpeg/dist/openjpegwasm_decode.js",
+        "@cornerstonejs/codec-openjpeg/decodewasm":
+          "@cornerstonejs/codec-openjpeg/dist/openjpegwasm_decode.wasm",
+      };
+      config.setupFilesAfterEnv = ["<rootDir>/src/setupTests.tsx"];
+      config.testEnvironment = "jsdom";
+      return config;
+    },
+  },
+};

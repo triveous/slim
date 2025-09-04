@@ -8,6 +8,7 @@ RUN yarn install --frozen-lockfile
 COPY . .
 ARG PUBLIC_URL=/wsi/
 ENV PUBLIC_URL=${PUBLIC_URL}
+ENV NODE_ENV=production
 # If your index.html uses %REACT_APP_CONFIG% in the script tag, export it here too
 # ARG REACT_APP_CONFIG=midas-dev
 # ENV REACT_APP_CONFIG=${REACT_APP_CONFIG}
