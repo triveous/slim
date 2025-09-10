@@ -7,7 +7,7 @@ COPY package.json yarn.lock ./
 RUN yarn install --frozen-lockfile
 COPY . .
 # Ensure CRA builds for /wsi
-ARG PUBLIC_URL=/
+ARG PUBLIC_URL=/slim
 ENV PUBLIC_URL=${PUBLIC_URL}
 # If your index.html uses %REACT_APP_CONFIG% in the script tag, export it here too
 ARG REACT_APP_CONFIG=midas-dev
