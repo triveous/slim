@@ -1,6 +1,15 @@
 #!/bin/sh
 set -e
 
+echo "============================="
+echo "SLIM Viewer - Startup Config"
+echo "============================="
+echo
+
+echo "Environment Variables:"
+printenv | sort
+echo
+
 : "${SERVER_URL:?Missing SERVER_URL}"
 : "${OIDC_AUTHORITY:?Missing OIDC_AUTHORITY}"
 : "${OIDC_CLIENT_ID:?Missing OIDC_CLIENT_ID}"
