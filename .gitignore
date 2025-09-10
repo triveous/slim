@@ -12,7 +12,6 @@
 # production
 /build
 
-public/config/*
 !public/config/demo.js
 !public/config/local.js
 !public/config/preview.js
@@ -27,3 +26,4 @@ public/config/*
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+./env
