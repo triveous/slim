@@ -10,8 +10,8 @@ COPY . .
 ARG PUBLIC_URL=/
 ENV PUBLIC_URL=${PUBLIC_URL}
 # If your index.html uses %REACT_APP_CONFIG% in the script tag, export it here too
-# ARG REACT_APP_CONFIG=midas-dev
-# ENV REACT_APP_CONFIG=${REACT_APP_CONFIG}
+ARG REACT_APP_CONFIG=midas-dev
+ENV REACT_APP_CONFIG=${REACT_APP_CONFIG}
 ENV NODE_ENV=production
 RUN yarn build
 
