@@ -25,6 +25,8 @@ module.exports = {
   ],
   webpack: {
     configure: (config, { env, paths }) => {
+      // Change this line from "/slim/" to "auto"
+      config.output.publicPath = "/";
       config.resolve = {
         fallback: {
           fs: false,
@@ -57,10 +59,6 @@ module.exports = {
       config.experiments = {
         asyncWebAssembly: true,
       };
-      // Ensure all emitted assets (chunks, workers) use the subpath, e.g. /wsi/
-      const base = process.env.PUBLIC_URL || "/";
-      config.output = config.output || {};
-      config.output.publicPath = base.endsWith("/") ? base : `${base}/`;
       return config;
     },
   },

@@ -1,108 +1,144 @@
-import React from 'react'
-import { createRoot } from 'react-dom/client'
-import { message } from 'antd'
+import React from "react";
+import { createRoot } from "react-dom/client";
+import { message } from "antd";
+// import { init as cornerstoneDICOMImageLoaderInit } from "@cornerstonejs/dicom-image-loader";
+import "./index.css";
+import AppConfig from "./AppConfig";
 
-import './index.css'
-import AppConfig from './AppConfig'
-
-import packageInfo from '../package.json'
-import CustomErrorBoundary from './components/CustomErrorBoundary'
+import packageInfo from "../package.json";
+import CustomErrorBoundary from "./components/CustomErrorBoundary";
 
 declare global {
   interface Window {
-    config: any
+    config: any;
   }
 }
 
-const config: AppConfig = window.config
+const config: AppConfig = window.config;
 if (config === undefined) {
-  throw Error('No application configuration was provided.')
+  throw Error("No application configuration was provided.");
 }
 
-let App
-if (config.mode === 'dark') {
-  App = React.lazy(async () => await import('./AppDark'))
+// // --- BEGIN: Worker Initialization (Modern API) ---
+
+// // 1. Build the correct worker path using the main application config
+// const publicPath = config.path || "/slim";
+// const codecsPath = `${publicPath}/static/js/`;
+
+// // 2. Create the configuration object for the DICOM loader's init function
+// const dicomLoaderConfig = {
+//   maxWebWorkers: navigator.hardwareConcurrency || 1,
+//   startWebWorkersOnDemand: true,
+//   // The path to the web worker script
+//   webWorkerPath: `${codecsPath}dataLoader.worker.min.js`,
+//   taskConfiguration: {
+//     decodeTask: {
+//       // The path to the codecs (WASM, etc.)
+//       codecsPath: codecsPath,
+//       // Other settings...
+//       loadCodecsOnStartup: true,
+//       initializeCodecsOnStartup: false,
+//       usePDFJS: false,
+//       strict: false,
+//     },
+//   },
+// };
+
+// // 3. Initialize the loader with its configuration
+// cornerstoneDICOMImageLoaderInit(dicomLoaderConfig);
+
+// --- END: Worker Initialization ---
+
+let App;
+if (config.mode === "dark") {
+  App = React.lazy(async () => await import("./AppDark"));
 } else {
-  App = React.lazy(async () => await import('./AppLight'))
+  App = React.lazy(async () => await import("./AppLight"));
 }
 
 const isMessageTypeDisabled = ({ type }: { type: string }): boolean => {
-  const { messages } = config
-  if (messages === undefined) return false
-  if (typeof messages.disabled === 'boolean') {
-    return messages.disabled
+  const { messages } = config;
+  if (messages === undefined) return false;
+  if (typeof messages.disabled === "boolean") {
+    return messages.disabled;
   }
-  return Array.isArray(messages.disabled) && messages.disabled.includes(type)
-}
+  return Array.isArray(messages.disabled) && messages.disabled.includes(type);
+};
 
 // Store original message methods
-const originalMessage = { ...message }
+const originalMessage = { ...message };
 
 const createMessageConfig = (content: string | object): object => {
-  const duration = config.messages?.duration ?? 5
+  const duration = config.messages?.duration ?? 5;
 
-  if (typeof content === 'object' && content !== null && content !== undefined) {
+  if (
+    typeof content === "object" &&
+    content !== null &&
+    content !== undefined
+  ) {
     return {
       ...content,
-      duration
-    }
+      duration,
+    };
   }
 
   return {
     content,
-    duration
-  }
-}
+    duration,
+  };
+};
 
 /** Create a proxy to control antd message */
 const messageProxy = new Proxy(originalMessage, {
-  get (target, prop: PropertyKey) {
+  get(target, prop: PropertyKey) {
     // Handle config method separately
-    if (prop === 'config') {
-      return message.config.bind(message)
+    if (prop === "config") {
+      return message.config.bind(message);
     }
 
     // Handle message methods (success, error, etc)
-    const method = target[prop as keyof typeof target]
-    if (typeof method === 'function') {
+    const method = target[prop as keyof typeof target];
+    if (typeof method === "function") {
       return (...args: any[]) => {
-        const isMessageEnabled = !isMessageTypeDisabled({ type: prop as string })
+        const isMessageEnabled = !isMessageTypeDisabled({
+          type: prop as string,
+        });
         if (isMessageEnabled) {
-          const messageConfig = createMessageConfig(args[0])
-          return (method as Function).apply(message, [messageConfig])
+          const messageConfig = createMessageConfig(args[0]);
+          return (method as Function).apply(message, [messageConfig]);
         }
-        return { then: () => {} }
-      }
+        return { then: () => {} };
+      };
     }
 
     // Pass through any other properties
-    return Reflect.get(target, prop)
-  }
-})
+    return Reflect.get(target, prop);
+  },
+});
 
 // Apply the proxy
-Object.assign(message, messageProxy)
+Object.assign(message, messageProxy);
 
 // Set global config after proxy is in place
 message.config({
   top: config.messages?.top ?? 100,
-  duration: config.messages?.duration ?? 5
-})
+  duration: config.messages?.duration ?? 5,
+});
 
-const container = document.getElementById('root')
+const container = document.getElementById("root");
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-const root = createRoot(container!)
+const root = createRoot(container!);
 root.render(
   /// / <React.StrictMode>
   <React.Suspense fallback={<div>Loading application...</div>}>
-    <CustomErrorBoundary context='App'>
+    <CustomErrorBoundary context="App">
       <App
         config={config}
         version={packageInfo.version}
         name={packageInfo.name}
-        homepage='https://github.com/ImagingDataCommons/slim'
+        homepage="https://github.com/ImagingDataCommons/slim"
       />
     </CustomErrorBoundary>
   </React.Suspense>
-// </React.StrictMode>
-)
+  // </React.StrictMode>
+);
