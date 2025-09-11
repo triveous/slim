@@ -25,7 +25,8 @@ module.exports = {
   ],
   webpack: {
     configure: (config, { env, paths }) => {
-      config.output.publicPath = "/slim/";
+      // Change this line from "/slim/" to "auto"
+      config.output.publicPath = "auto";
       config.resolve = {
         fallback: {
           fs: false,
@@ -39,20 +40,21 @@ module.exports = {
          * for the viewer.
          */
         alias: {
-          "dicom-microscopy-viewer": "dicom-microscopy-viewer/bundled",
+          "dicom-microscopy-viewer":
+            "dicom-microscopy-viewer/dist/dynamic-import/dicomMicroscopyViewer.min.js",
         },
       };
-      // config.plugins.push(
-      //   // TO DO: remove hard coded path
-      //   new CopyWebpackPlugin({
-      //     patterns: [
-      //       {
-      //         from: "./node_modules/dicom-microscopy-viewer/dist/dynamic-import",
-      //         to: "./static/js",
-      //       },
-      //     ],
-      //   })
-      // );
+      config.plugins.push(
+        // TO DO: remove hard coded path
+        new CopyWebpackPlugin({
+          patterns: [
+            {
+              from: "./node_modules/dicom-microscopy-viewer/dist/dynamic-import",
+              to: "./static/js",
+            },
+          ],
+        })
+      );
       config.target = "web";
       config.experiments = {
         asyncWebAssembly: true,
