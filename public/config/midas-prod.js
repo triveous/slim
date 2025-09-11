@@ -1,7 +1,7 @@
 /* eslint-disable no-template-curly-in-string */
 
 window.config = {
-  path: "/slim",
+  path: "/",
   servers: [
     {
       id: "prod",

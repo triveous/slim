@@ -1,7 +1,7 @@
 import React from "react";
 import { createRoot } from "react-dom/client";
 import { message } from "antd";
-import { init as cornerstoneDICOMImageLoaderInit } from "@cornerstonejs/dicom-image-loader";
+// import { init as cornerstoneDICOMImageLoaderInit } from "@cornerstonejs/dicom-image-loader";
 import "./index.css";
 import AppConfig from "./AppConfig";
 
@@ -19,33 +19,33 @@ if (config === undefined) {
   throw Error("No application configuration was provided.");
 }
 
-// --- BEGIN: Worker Initialization (Modern API) ---
+// // --- BEGIN: Worker Initialization (Modern API) ---
 
-// 1. Build the correct worker path using the main application config
-const publicPath = config.path || "/slim";
-const codecsPath = `${publicPath}/static/js/`;
+// // 1. Build the correct worker path using the main application config
+// const publicPath = config.path || "/slim";
+// const codecsPath = `${publicPath}/static/js/`;
 
-// 2. Create the configuration object for the DICOM loader's init function
-const dicomLoaderConfig = {
-  maxWebWorkers: navigator.hardwareConcurrency || 1,
-  startWebWorkersOnDemand: true,
-  // The path to the web worker script
-  webWorkerPath: `${codecsPath}dataLoader.worker.min.js`,
-  taskConfiguration: {
-    decodeTask: {
-      // The path to the codecs (WASM, etc.)
-      codecsPath: codecsPath,
-      // Other settings...
-      loadCodecsOnStartup: true,
-      initializeCodecsOnStartup: false,
-      usePDFJS: false,
-      strict: false,
-    },
-  },
-};
+// // 2. Create the configuration object for the DICOM loader's init function
+// const dicomLoaderConfig = {
+//   maxWebWorkers: navigator.hardwareConcurrency || 1,
+//   startWebWorkersOnDemand: true,
+//   // The path to the web worker script
+//   webWorkerPath: `${codecsPath}dataLoader.worker.min.js`,
+//   taskConfiguration: {
+//     decodeTask: {
+//       // The path to the codecs (WASM, etc.)
+//       codecsPath: codecsPath,
+//       // Other settings...
+//       loadCodecsOnStartup: true,
+//       initializeCodecsOnStartup: false,
+//       usePDFJS: false,
+//       strict: false,
+//     },
+//   },
+// };
 
-// 3. Initialize the loader with its configuration
-cornerstoneDICOMImageLoaderInit(dicomLoaderConfig);
+// // 3. Initialize the loader with its configuration
+// cornerstoneDICOMImageLoaderInit(dicomLoaderConfig);
 
 // --- END: Worker Initialization ---
 
