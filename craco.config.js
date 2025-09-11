@@ -39,8 +39,7 @@ module.exports = {
          * for the viewer.
          */
         alias: {
-          "dicom-microscopy-viewer":
-            "dicom-microscopy-viewer/dist/bundled/dicomMicroscopyViewer.bundle.min.js",
+          "dicom-microscopy-viewer": "dicom-microscopy-viewer/bundled",
         },
       };
       // config.plugins.push(
