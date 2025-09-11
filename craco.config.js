@@ -26,7 +26,7 @@ module.exports = {
   webpack: {
     configure: (config, { env, paths }) => {
       // Change this line from "/slim/" to "auto"
-      config.output.publicPath = "/";
+      config.output.publicPath = "/slim/";
       config.resolve = {
         fallback: {
           fs: false,
@@ -50,7 +50,7 @@ module.exports = {
           patterns: [
             {
               from: "./node_modules/dicom-microscopy-viewer/dist/dynamic-import",
-              to: "./static/js",
+              to: "./slim/static/js",
             },
           ],
         })

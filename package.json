@@ -3,7 +3,7 @@
   "version": "0.42.2",
   "private": true,
   "author": "ImagingDataCommons",
-  "homepage": "/",
+  "homepage": "/slim",
   "scripts": {
     "start": "rm -rf ./node_modules/.cache/default-development && craco start",
     "build": "craco build",
