@@ -26,7 +26,7 @@ module.exports = {
   webpack: {
     configure: (config, { env, paths }) => {
       // Change this line from "/slim/" to "auto"
-      config.output.publicPath = "auto";
+      config.output.publicPath = "/slim/";
       config.resolve = {
         fallback: {
           fs: false,
