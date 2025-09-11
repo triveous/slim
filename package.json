@@ -72,6 +72,7 @@
     "typescript": "^4.7.4"
   },
   "dependencies": {
+    "@cornerstonejs/core": "^4.1.3",
     "@cornerstonejs/dicom-image-loader": "^4.1.3",
     "react-error-boundary": "^3.1.4"
   },
