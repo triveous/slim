@@ -40,20 +40,20 @@ module.exports = {
          */
         alias: {
           "dicom-microscopy-viewer":
-            "dicom-microscopy-viewer/dist/dynamic-import/dicomMicroscopyViewer.min.js",
+            "dicom-microscopy-viewer/dist/bundled/dicomMicroscopyViewer.bundle.min.js",
         },
       };
-      config.plugins.push(
-        // TO DO: remove hard coded path
-        new CopyWebpackPlugin({
-          patterns: [
-            {
-              from: "./node_modules/dicom-microscopy-viewer/dist/dynamic-import",
-              to: "./static/js",
-            },
-          ],
-        })
-      );
+      // config.plugins.push(
+      //   // TO DO: remove hard coded path
+      //   new CopyWebpackPlugin({
+      //     patterns: [
+      //       {
+      //         from: "./node_modules/dicom-microscopy-viewer/dist/dynamic-import",
+      //         to: "./static/js",
+      //       },
+      //     ],
+      //   })
+      // );
       config.target = "web";
       config.experiments = {
         asyncWebAssembly: true,
