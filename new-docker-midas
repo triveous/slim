@@ -1,14 +1,14 @@
 # Stage 1: Build the React application
-# Use a newer version of Node.js that meets dependency requirements
-FROM node:20-alpine AS build
+FROM node:18-alpine AS build
 
 # Set the working directory
 WORKDIR /app
 
 # This ARG will receive the value from the GitHub Actions workflow
-ARG REACT_APP_CONFIG
+ARG REACT_APP_CONFIG=new-dev
 # This ENV makes the variable available to the yarn build script
 ENV REACT_APP_CONFIG=${REACT_APP_CONFIG}
+
 # Copy package.json and yarn.lock to leverage Docker cache
 COPY package.json yarn.lock ./
 
@@ -19,7 +19,8 @@ RUN yarn install --frozen-lockfile
 COPY . .
 
 # Create the production build
-RUN PUBLIC_URL=/slim/ yarn build
+# Using the command from your README
+RUN PUBLIC_URL=/ yarn build
 
 # Stage 2: Serve the application using a lightweight web server
 FROM nginx:1.25-alpine

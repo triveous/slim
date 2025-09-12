@@ -1,6 +1,6 @@
 window.config = {
   // This must match the location configured for web server
-  path: "/wsi",
+  path: "/slim",
   servers: [
     {
       id: "local",
@@ -10,6 +10,14 @@ window.config = {
       write: true,
     },
   ],
+  oidc: {
+    authority: "http://localhost/keycloak/realms/ohif", // ${OIDC_AUTHORITY}",
+    clientId: "slim", //${OIDC_CLIENT_ID}",
+    scope: "openid profile email",
+    grantType: "authorization_code",
+    endSessionEndpoint:
+      "http://localhost/keycloak/realms/ohif/protocol/openid-connect/logout", //${OIDC_LOGOUT}",
+  },
   disableWorklist: false,
   disableAnnotationTools: false,
   mode: "light",
