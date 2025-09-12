@@ -23,7 +23,7 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
-          context: .
+          context: ./new-docker-midas
           push: true
           tags: ${{ secrets.DOCKER_HUB_USERNAME }}/midas-slim-viewer-repo:latest # Replace with your repo name
 
