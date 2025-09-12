@@ -28,7 +28,7 @@ module.exports = {
   ],
   webpack: {
     configure: (config, { env, paths }) => {
-      config.output.publicPath = publicUrl;
+      // config.output.publicPath = publicUrl;
       config.resolve = {
         fallback: {
           fs: false,
@@ -52,7 +52,7 @@ module.exports = {
           patterns: [
             {
               from: "./node_modules/dicom-microscopy-viewer/dist/dynamic-import",
-              to: `./${relativePath}/static/js`,
+              to: `./static/js`,
             },
           ],
         })

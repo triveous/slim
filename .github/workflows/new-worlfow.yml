@@ -1,0 +1,29 @@
+name: Build and Push Docker Image
+
+# This workflow runs on every push to the main branch
+on:
+  push:
+    branches: ["midas-dev"] # Change this to your default branch if it's different
+
+jobs:
+  build-and-push:
+    name: Build and Push Docker Image to Docker Hub
+    runs-on: ubuntu-latest # Use the latest ubuntu runner
+
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v4
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/midas-slim-viewer-repo:latest # Replace with your repo name
+

@@ -1,22 +1,22 @@
 window.config = {
   // This must match the location configured for web server
-  path: "/slim",
+  path: "/",
   servers: [
     {
-      id: "local",
+      id: "new-dev",
       // This must match the proxy location configured for the web server
-      url: "https://localhost/pacs",
+      url: "http://hub.midashealth.in/dcm4chee-arc/aets/DCM4CHEE/rs",
       upgradeInsecureRequests: true, // Enable automatic HTTP -> HTTPS upgrade
       write: true,
     },
   ],
   oidc: {
-    authority: "http://localhost/keycloak/realms/ohif", // ${OIDC_AUTHORITY}",
+    authority: "https://hub.midashealth.in/auth/realms/midas", // ${OIDC_AUTHORITY}",
     clientId: "slim", //${OIDC_CLIENT_ID}",
     scope: "openid profile email",
     grantType: "authorization_code",
     endSessionEndpoint:
-      "http://localhost/keycloak/realms/ohif/protocol/openid-connect/logout", //${OIDC_LOGOUT}",
+      "https://hub.midashealth.in/auth/realms/midas/protocol/openid-connect/logout", //${OIDC_LOGOUT}",
   },
   disableWorklist: false,
   disableAnnotationTools: false,
