@@ -1,5 +1,6 @@
 # Stage 1: Build the React application
-FROM node:18-alpine AS build
+# Use a newer version of Node.js that meets dependency requirements
+FROM node:20-alpine AS build
 
 # Set the working directory
 WORKDIR /app
@@ -14,7 +15,6 @@ RUN yarn install --frozen-lockfile
 COPY . .
 
 # Create the production build
-# Using the command from your README
 RUN PUBLIC_URL=/ yarn build
 
 # Stage 2: Serve the application using a lightweight web server
