@@ -1,35 +1,38 @@
-# name: Build and push Docker image
+name: Build and Push Docker Image
 
-# on:
-#   push:
-#     branches: [midas-dev] # push latest on midas-dev
+on:
+  push:
+    branches: ["midas-dev"]
 
-# jobs:
-#   build:
-#     runs-on: ubuntu-latest
+jobs:
+  build-and-push:
+    name: Build and Push Docker Image to Docker Hub
+    runs-on: ubuntu-latest
 
-#     steps:
-#       - name: Checkout
-#         uses: actions/checkout@v4
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v4
 
-#       - name: Set up QEMU
-#         uses: docker/setup-qemu-action@v3
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_PASSWORD }}
 
-#       - name: Set up Buildx
-#         uses: docker/setup-buildx-action@v3
+      - name: Extract Docker metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ secrets.DOCKER_HUB_USERNAME }}/midas-slim-viewer
+          tags: |
+            type=sha,prefix=,suffix=,format=short
 
-#       - name: Login to Docker Hub
-#         uses: docker/login-action@v3
-#         with:
-#           username: ${{ secrets.DOCKER_HUB_USERNAME }}
-#           password: ${{ secrets.DOCKER_HUB_PASSWORD }}
-
-#       - name: Build, tag, and push image to Docker Hub
-#         env:
-#           DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
-#           DOCKER_HUB_REPOSITORY: midas-slim-viewer
-#           COMMIT_SHA: ${{ github.sha }}
-#         run: |
-#           IMAGE_TAG=${COMMIT_SHA::7}
-#           docker build -t $DOCKER_HUB_USERNAME/$DOCKER_HUB_REPOSITORY:contributor-dev-$IMAGE_TAG -f docker-midas-dev .
-#           docker push $DOCKER_HUB_USERNAME/$DOCKER_HUB_REPOSITORY:contributor-dev-$IMAGE_TAG
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          build-args: |
+            REACT_APP_CONFIG=midas-dev

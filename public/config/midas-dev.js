@@ -1,23 +1,23 @@
-/* eslint-disable no-template-curly-in-string */
-
 window.config = {
-  path: "/slim",
+  // This must match the location configured for web server
+  path: "/slim/",
   servers: [
     {
-      id: "dev",
-      url: "${SERVER_URL}",
-      upgradeInsecureRequests: true,
+      id: "new-dev",
+      // This must match the proxy location configured for the web server
+      url: "https://hub.midashealth.in/dcm4chee-arc/aets/DCM4CHEE/rs",
+      upgradeInsecureRequests: true, // Enable automatic HTTP -> HTTPS upgrade
       write: true,
     },
   ],
   oidc: {
-    authority: "${OIDC_AUTHORITY}",
-    clientId: "${OIDC_CLIENT_ID}",
+    authority: "https://hub.midashealth.in/auth/realms/midas", // ${OIDC_AUTHORITY}",
+    clientId: "slim", //${OIDC_CLIENT_ID}",
     scope: "openid profile email",
     grantType: "authorization_code",
-    endSessionEndpoint: "${OIDC_LOGOUT}",
+    endSessionEndpoint:
+      "https://hub.midashealth.in/auth/realms/midas/protocol/openid-connect/logout", //${OIDC_LOGOUT}",
   },
-  enableServerSelection: false,
   disableWorklist: false,
   disableAnnotationTools: false,
   mode: "light",
