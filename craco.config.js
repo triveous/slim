@@ -1,6 +1,9 @@
 const CracoLessPlugin = require("craco-less");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 
+const publicUrl = process.env.PUBLIC_URL || "/slim/";
+const relativePath = publicUrl.startsWith("/") ? publicUrl.slice(1) : publicUrl;
+
 module.exports = {
   plugins: [
     {
@@ -25,8 +28,7 @@ module.exports = {
   ],
   webpack: {
     configure: (config, { env, paths }) => {
-      // Change this line from "/slim/" to "auto"
-      config.output.publicPath = "/slim/";
+      config.output.publicPath = publicUrl;
       config.resolve = {
         fallback: {
           fs: false,
@@ -50,7 +52,7 @@ module.exports = {
           patterns: [
             {
               from: "./node_modules/dicom-microscopy-viewer/dist/dynamic-import",
-              to: "./slim/static/js",
+              to: `./${relativePath}/static/js`,
             },
           ],
         })

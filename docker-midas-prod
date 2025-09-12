@@ -6,7 +6,7 @@ RUN corepack enable
 COPY package.json yarn.lock ./
 RUN yarn install --frozen-lockfile
 COPY . .
-ARG PUBLIC_URL=/
+ARG PUBLIC_URL=/slim
 ENV PUBLIC_URL=${PUBLIC_URL}
 ENV NODE_ENV=production
 # If your index.html uses %REACT_APP_CONFIG% in the script tag, export it here too
