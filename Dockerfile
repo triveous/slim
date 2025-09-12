@@ -19,7 +19,7 @@ RUN yarn install --frozen-lockfile
 COPY . .
 
 # Create the production build
-RUN PUBLIC_URL=/ yarn build
+RUN PUBLIC_URL=/slim/ yarn build
 
 # Stage 2: Serve the application using a lightweight web server
 FROM nginx:1.25-alpine
