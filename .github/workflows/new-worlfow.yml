@@ -20,10 +20,21 @@ jobs:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_PASSWORD }}
 
+      - name: Extract Docker metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ secrets.DOCKERHUB_USERNAME }}/midas-slim-viewer
+          tags: |
+            type=sha,prefix=,suffix=,format=short
+
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
           context: .
+          file: .
           push: true
-          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/midas-slim-viewer-repo:latest # Replace with your repo name
-
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          build-args: |
+            REACT_APP_CONFIG=new-dev

@@ -5,6 +5,10 @@ FROM node:20-alpine AS build
 # Set the working directory
 WORKDIR /app
 
+# This ARG will receive the value from the GitHub Actions workflow
+ARG REACT_APP_CONFIG
+# This ENV makes the variable available to the yarn build script
+ENV REACT_APP_CONFIG=${REACT_APP_CONFIG}
 # Copy package.json and yarn.lock to leverage Docker cache
 COPY package.json yarn.lock ./
 
