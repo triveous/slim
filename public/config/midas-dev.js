@@ -3,7 +3,7 @@ window.config = {
   path: "/slim/",
   servers: [
     {
-      id: "new-dev",
+      id: "midas-dev",
       // This must match the proxy location configured for the web server
       url: "https://hub.midashealth.in/dcm4chee-arc/aets/DCM4CHEE/rs",
       upgradeInsecureRequests: true, // Enable automatic HTTP -> HTTPS upgrade
