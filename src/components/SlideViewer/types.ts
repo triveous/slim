@@ -129,4 +129,5 @@ export interface SlideViewerState {
   isFindingLoadingMore: boolean;
   // magnification widget
   availableMagnifications: Array<{ level: number; mag: number; label: string }>;
+  maxDigitalZoom?: number;
 }
