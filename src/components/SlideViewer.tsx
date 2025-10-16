@@ -88,6 +88,14 @@ import SegmentList from "./SegmentList";
 import MappingList from "./MappingList";
 import Btn from "./Button";
 
+// NDP-style lens steps & defaults (top-level, not inside class)
+type LensStep = number;
+export const NDP_LENS_STEPS: LensStep[] = [
+  0.0, 1.25, 2.5, 5, 10, 20, 40, 80, 160,
+];
+export const FORTY_X_UM_PER_PX = 0.25; // 40× ≈ 0.25 µm/px
+export const DEFAULT_MAX_DIGITAL = 8; // cap for residual digital zoom
+
 /**
  * React component for interactive viewing of an individual digital slide,
  * which corresponds to one DICOM Series of DICOM Slide Microscopy images and
@@ -143,7 +151,7 @@ class SlideViewer extends React.Component<SlideViewerProps, SlideViewerState> {
 
   private readonly selectionStrokeColor: number[] = [0, 153, 255];
   private readonly selectionFillColor: number[] = [255, 255, 255];
-
+  private magCalibration: number = 1;
   private readonly selectedRoiStyle: dmv.viewer.ROIStyleOptions = {
     stroke: { color: [...this.selectionStrokeColor, 1], width: 3 },
     fill: { color: [...this.selectionFillColor, 0.5] },
@@ -273,6 +281,7 @@ class SlideViewer extends React.Component<SlideViewerProps, SlideViewerState> {
       isFindingLoadingMore: false,
       // magnification widget
       availableMagnifications: [],
+      maxDigitalZoom: DEFAULT_MAX_DIGITAL,
     };
   }
 
@@ -755,6 +764,8 @@ class SlideViewer extends React.Component<SlideViewerProps, SlideViewerState> {
           if (matchedInstances === null || matchedInstances === undefined) {
             matchedInstances = [];
           }
+          console.log("matchedInstances", matchedInstances);
+
           matchedInstances.forEach((i) => {
             const { dataset } = dmv.metadata.formatMetadata(i);
             const instance = dataset as dmv.metadata.Instance;
@@ -3795,46 +3806,46 @@ class SlideViewer extends React.Component<SlideViewerProps, SlideViewerState> {
     return "default";
   };
   // Add near other private fields
-  private magCalibration = 1; // scales spacing-derived mag to scanner's objective
+  // private magCalibration = 1; // scales spacing-derived mag to scanner's objective
 
   // Read Objective Lens Power (0048,0112) if available
   // Put this inside the SlideViewer class
 
   // Read Objective Lens Power (0048,0112) from the first optical path's metadata
-  private getObjectiveLensPower = (): number | undefined => {
-    try {
-      // 1) First optical path id
-      const allPaths = this.volumeViewer.getAllOpticalPaths();
-      const firstPath: string | undefined =
-        allPaths && allPaths.length > 0 ? allPaths[0].identifier : undefined;
+  // private getObjectiveLensPower = (): number | undefined => {
+  //   try {
+  //     // 1) First optical path id
+  //     const allPaths = this.volumeViewer.getAllOpticalPaths();
+  //     const firstPath: string | undefined =
+  //       allPaths && allPaths.length > 0 ? allPaths[0].identifier : undefined;
 
-      // 2) Metadata array for that path (viewer returns per-image metadata objects)
-      const mdArr: dmv.metadata.VLWholeSlideMicroscopyImage[] | undefined =
-        firstPath
-          ? (this.volumeViewer.getOpticalPathMetadata(
-              firstPath
-            ) as dmv.metadata.VLWholeSlideMicroscopyImage[])
-          : undefined;
+  //     // 2) Metadata array for that path (viewer returns per-image metadata objects)
+  //     const mdArr: dmv.metadata.VLWholeSlideMicroscopyImage[] | undefined =
+  //       firstPath
+  //         ? (this.volumeViewer.getOpticalPathMetadata(
+  //             firstPath
+  //           ) as dmv.metadata.VLWholeSlideMicroscopyImage[])
+  //         : undefined;
 
-      // 3) Objective Lens Power can be on the OpticalPathSequence item, sometimes surfaced at top
-      const lensMaybe =
-        (mdArr?.[0]?.OpticalPathSequence?.[0] as any)?.ObjectiveLensPower ??
-        (mdArr?.[0] as any)?.ObjectiveLensPower ??
-        (this.props.slide.volumeImages?.[0]?.OpticalPathSequence?.[0] as any)
-          ?.ObjectiveLensPower;
+  //     // 3) Objective Lens Power can be on the OpticalPathSequence item, sometimes surfaced at top
+  //     const lensMaybe =
+  //       (mdArr?.[0]?.OpticalPathSequence?.[0] as any)?.ObjectiveLensPower ??
+  //       (mdArr?.[0] as any)?.ObjectiveLensPower ??
+  //       (this.props.slide.volumeImages?.[0]?.OpticalPathSequence?.[0] as any)
+  //         ?.ObjectiveLensPower;
 
-      const v = typeof lensMaybe === "string" ? Number(lensMaybe) : lensMaybe;
-      return typeof v === "number" && Number.isFinite(v) ? v : undefined;
-    } catch {
-      return undefined;
-    }
-  };
+  //     const v = typeof lensMaybe === "string" ? Number(lensMaybe) : lensMaybe;
+  //     return typeof v === "number" && Number.isFinite(v) ? v : undefined;
+  //   } catch {
+  //     return undefined;
+  //   }
+  // };
 
   // 2) Helpers (add as methods on the class)
-  private mmPerPixelAtLevel = (level: number): number => {
-    // viewer returns [x,y] spacing in mm; use X
-    return this.volumeViewer.getPixelSpacing(level)[0]; // mm/pixel (X)
-  };
+  // private mmPerPixelAtLevel = (level: number): number => {
+  //   // viewer returns [x,y] spacing in mm; use X
+  //   return this.volumeViewer.getPixelSpacing(level)[0]; // mm/pixel (X)
+  // };
 
   // private magFromSpacing = (mmPerPx: number): number => {
   //   // 1× ≈ 10 µm/px = 0.01 mm/px
@@ -3842,13 +3853,68 @@ class SlideViewer extends React.Component<SlideViewerProps, SlideViewerState> {
   // };
 
   // 1× ≈ 10 µm/px = 0.01 mm/px, scaled by calibration to match NDP/Nikon
-  private magFromSpacing = (mmPerPx: number): number => {
-    return +(this.magCalibration * (0.01 / mmPerPx)).toFixed(2);
-  };
+  // private magFromSpacing = (mmPerPx: number): number => {
+  //   return +(this.magCalibration * (0.01 / mmPerPx)).toFixed(2);
+  // };
 
   // Map actual mags to “nice” labels like NDP (0.45×, 1.25×, 2.5×, 5×, 10×, 20×, 40×, 80×)
+  // private snapToNiceMag = (mag: number): string => {
+  //   const nice = [0.45, 1.25, 2.5, 5, 10, 20, 40, 80, 100, 150]; // <- added 80,100,150
+  //   const best = nice.reduce(
+  //     (a, b) => (Math.abs(b - mag) < Math.abs(a - mag) ? b : a),
+  //     nice[0]
+  //   );
+  //   return `${best}x`;
+  // };
+
+  // Read Objective Lens Power (0048,0112) if present to calibrate “×”
+  private getObjectiveLensPower = (): number | undefined => {
+    try {
+      const allPaths = this.volumeViewer.getAllOpticalPaths();
+      const firstPath = allPaths?.[0]?.identifier;
+      const mdArr = firstPath
+        ? (this.volumeViewer.getOpticalPathMetadata(
+            firstPath
+          ) as dmv.metadata.VLWholeSlideMicroscopyImage[])
+        : undefined;
+      const lensMaybe =
+        (mdArr?.[0]?.OpticalPathSequence?.[0] as any)?.ObjectiveLensPower ??
+        (mdArr?.[0] as any)?.ObjectiveLensPower ??
+        (this.props.slide.volumeImages?.[0]?.OpticalPathSequence?.[0] as any)
+          ?.ObjectiveLensPower;
+      const v = typeof lensMaybe === "string" ? Number(lensMaybe) : lensMaybe;
+      return typeof v === "number" && Number.isFinite(v) ? v : undefined;
+    } catch {
+      return undefined;
+    }
+  };
+
+  // Scalar mm/px for a level (average X/Y if needed)
+  private mmPerPixelAtLevel = (level: number): number => {
+    // Slim exposes getPixelSpacing(level) → [mm/px X, mm/px Y]
+    const sp = this.volumeViewer.getPixelSpacing(level);
+    return (sp[0] + sp[1]) / 2;
+  };
+
+  // 40× anchor at 0.25 µm/px → convert spacing to “×”
+  private magFromSpacing = (mmPerPx: number): number => {
+    const umPerPx = mmPerPx * 1000;
+    if (umPerPx <= 0) return 0;
+    // At 40× we expect 0.25 µm/px → scale so spacing maps to objective power
+    return +((FORTY_X_UM_PER_PX / umPerPx) * 40 * this.magCalibration).toFixed(
+      2
+    );
+  };
+
+  // For µm/px readout in UI (optional)
+  private umPerPxFromMag = (mag: number): number => {
+    if (mag <= 0) return Infinity;
+    return (FORTY_X_UM_PER_PX * 40 * this.magCalibration) / mag;
+  };
+
+  // optional label snap (keeps menu tidy)
   private snapToNiceMag = (mag: number): string => {
-    const nice = [0.45, 1.25, 2.5, 5, 10, 20, 40, 80, 100, 150]; // <- added 80,100,150
+    const nice = [1.25, 2.5, 5, 10, 20, 40, 80, 160];
     const best = nice.reduce(
       (a, b) => (Math.abs(b - mag) < Math.abs(a - mag) ? b : a),
       nice[0]
@@ -3857,116 +3923,61 @@ class SlideViewer extends React.Component<SlideViewerProps, SlideViewerState> {
   };
 
   // Build once per slide or when viewer (re)renders
-  // private buildMagnificationMenu = (): void => {
-  //   const levels: Array<{ level: number; mag: number; label: string }> = [];
-  //   for (let i = 0; i < this.volumeViewer.numLevels; i++) {
-  //     const mmPerPx = this.mmPerPixelAtLevel(i);
-  //     const mag = this.magFromSpacing(mmPerPx);
-  //     levels.push({ level: i, mag, label: this.snapToNiceMag(mag) });
-  //   }
-  //   // Deduplicate labels while keeping closest level to that label
-  //   const byLabel: Record<
-  //     string,
-  //     { level: number; mag: number; label: string }
-  //   > = {};
-  //   levels.forEach((x) => {
-  //     const k = x.label;
-  //     if (
-  //       !(k in byLabel) ||
-  //       Math.abs(+k.replace("x", "") - x.mag) <
-  //         Math.abs(+k.replace("x", "") - byLabel[k].mag)
-  //     ) {
-  //       byLabel[k] = x;
-  //     }
-  //   });
-  //   const unique = Object.values(byLabel).sort((a, b) => a.mag - b.mag);
-  //   this.setState((s) => ({
-  //     availableMagnifications: unique,
-  //     selectedMagnification: s.selectedMagnification ?? unique.at(-1)?.mag,
-  //   }));
-  // };
-
-  // Build once per slide or when viewer (re)renders
   private buildMagnificationMenu = (): void => {
-    // 1) Calibrate Slim's mag scale to scanner lens, if present
+    // Calibrate against ObjectiveLensPower if available
     const lens = this.getObjectiveLensPower(); // e.g., 20 or 40
-    const sx0 = this.mmPerPixelAtLevel(0); // mm/px at finest level
-    const empirical0 = 0.01 / sx0; // Slim's uncalibrated mag at level 0
-    this.magCalibration = lens ? lens / empirical0 : 1;
+    const sx0 = this.mmPerPixelAtLevel(0); // mm/px at highest resolution
+    const mag0 = (FORTY_X_UM_PER_PX / (sx0 * 1000)) * 40; // uncalibrated “objective-like”
+    this.magCalibration = lens ? lens / mag0 : 1;
 
-    // 2) Build the menu using calibrated magnifications
+    // Build native level list
     const levels: Array<{ level: number; mag: number; label: string }> = [];
     for (let i = 0; i < this.volumeViewer.numLevels; i++) {
-      const mmPerPx = this.mmPerPixelAtLevel(i);
-      const mag = this.magFromSpacing(mmPerPx);
+      const mag = this.magFromSpacing(this.mmPerPixelAtLevel(i));
       levels.push({ level: i, mag, label: this.snapToNiceMag(mag) });
     }
 
-    // const byLabel: Record<
-    //   string,
-    //   { level: number; mag: number; label: string }
-    // > = {};
-    // levels.forEach((x) => {
-    //   const k = x.label;
-    //   const want = +k.replace("x", "");
-    //   if (
-    //     !(k in byLabel) ||
-    //     Math.abs(want - x.mag) < Math.abs(want - byLabel[k].mag)
-    //   )
-    //     byLabel[k] = x;
-    // });
-    // const unique = Object.values(byLabel).sort((a, b) => a.mag - b.mag);
+    // Ensure NDP lens targets exist; map each target to nearest native level
+    const augmented: Array<{ level: number; mag: number; label: string }> = [
+      ...levels,
+    ];
+    NDP_LENS_STEPS.filter((m) => m > 0).forEach((target) => {
+      let bestLevel = 0;
+      let bestScore = Number.POSITIVE_INFINITY;
+      for (let i = 0; i < this.volumeViewer.numLevels; i++) {
+        const mi = this.magFromSpacing(this.mmPerPixelAtLevel(i));
+        const score = Math.abs(Math.log(target / mi));
+        if (score < bestScore) {
+          bestScore = score;
+          bestLevel = i;
+        }
+      }
+      const label = `${target}x`;
+      if (!augmented.some((a) => a.label === label)) {
+        augmented.push({ level: bestLevel, mag: target, label });
+      }
+    });
 
-    // this.setState((s) => ({
-    //   availableMagnifications: unique,
-    //   selectedMagnification: s.selectedMagnification ?? unique.at(-1)?.mag,
-    // }));
-
-    // Deduplicate by label, keep the closest mag for that label
+    // Deduplicate by label; keep the entry closest to its numeric label
     const byLabel: Record<
       string,
       { level: number; mag: number; label: string }
     > = {};
-    levels.forEach((x) => {
-      const k = x.label;
-      const want = +k.replace("x", "");
-      if (
-        !(k in byLabel) ||
-        Math.abs(want - x.mag) < Math.abs(want - byLabel[k].mag)
-      )
-        byLabel[k] = x;
+    augmented.forEach((x) => {
+      const want = +x.label.replace("x", "");
+      const keep = byLabel[x.label];
+      if (!keep || Math.abs(want - x.mag) < Math.abs(want - keep.mag))
+        byLabel[x.label] = x;
     });
-    let unique = Object.values(byLabel).sort((a, b) => a.mag - b.mag);
 
-    // Ensure high “virtual” targets are present even if no distinct level exists
-    const extraTargets = [80, 100, 150];
-    extraTargets.forEach((t) => {
-      const label = `${t}x`;
-      if (!unique.some((u) => u.label === label)) {
-        // compute nearest level to t for completeness (selection logic will also snap)
-        let bestLevel = 0;
-        let best = Number.POSITIVE_INFINITY;
-        for (let i = 0; i < this.volumeViewer.numLevels; i++) {
-          const mi = this.magFromSpacing(this.mmPerPixelAtLevel(i));
-          const score = Math.abs(Math.log(t / mi));
-          if (score < best) {
-            best = score;
-            bestLevel = i;
-          }
-        }
-        unique.push({ level: bestLevel, mag: t, label });
-      }
-    });
-    unique = unique.sort((a, b) => a.mag - b.mag);
+    const unique = Object.values(byLabel).sort((a, b) => a.mag - b.mag);
+    const defaultMag =
+      unique.find((u) => Math.abs(u.mag - 1.25) < 0.02)?.mag ??
+      unique[0]?.mag ??
+      1.25;
 
-    // Prefer 1.25x as default if present; else fall back to the lowest available
-    const preferred = 1.25;
-    const match = unique.find((u) => Math.abs(u.mag - preferred) < 0.01);
-    const defaultMag = match?.mag ?? unique[0]?.mag;
-
-    this.setState((s) => ({
+    this.setState((s: any) => ({
       availableMagnifications: unique,
-      // if user hasn't chosen yet, set the default to 1.25x (or smallest)
       selectedMagnification: s.selectedMagnification ?? defaultMag,
     }));
   };
@@ -3984,18 +3995,45 @@ class SlideViewer extends React.Component<SlideViewerProps, SlideViewerState> {
 
   // Your existing logic remains valid; it now compares calibrated mags
   private setMagnification = (mag: number): void => {
+    // Overview button: go to lowest level, reset residual scale
+    if (!Number.isFinite(mag) || mag <= 0) {
+      const lowest = this.volumeViewer.numLevels - 1;
+      const [cx, cy] = this.getCurrentCenterXY();
+      this.volumeViewer.navigate({ position: [cx, cy], level: lowest });
+      (this.volumeViewer as any).setScale?.(1);
+      (this.volumeViewer as any).setZoom?.(1);
+      this.setState({ selectedMagnification: 0 });
+      return;
+    }
+
+    // Choose best native level for requested “×”
     let bestLevel = 0,
+      bestNativeMag = 1,
       bestScore = Number.POSITIVE_INFINITY;
     for (let i = 0; i < this.volumeViewer.numLevels; i++) {
-      const mi = this.magFromSpacing(this.mmPerPixelAtLevel(i));
-      const score = Math.abs(Math.log(mag / mi));
+      const nativeMag = this.magFromSpacing(this.mmPerPixelAtLevel(i));
+      const score = Math.abs(Math.log(mag / nativeMag));
       if (score < bestScore) {
         bestScore = score;
         bestLevel = i;
+        bestNativeMag = nativeMag;
       }
     }
+
+    // Residual scale to exactly hit requested “×” (digital zoom)
+    const residual = mag / (bestNativeMag || mag);
+    const maxDigital = this.state.maxDigitalZoom ?? DEFAULT_MAX_DIGITAL;
+    const clamped = Math.min(Math.max(residual, 1 / maxDigital), maxDigital);
+
+    // Navigate without shifting center; then apply residual scale
     const [cx, cy] = this.getCurrentCenterXY();
     this.volumeViewer.navigate({ position: [cx, cy], level: bestLevel });
+    if (typeof (this.volumeViewer as any).setScale === "function") {
+      (this.volumeViewer as any).setScale(clamped);
+    } else if (typeof (this.volumeViewer as any).setZoom === "function") {
+      (this.volumeViewer as any).setZoom(clamped);
+    }
+
     this.setState({ selectedMagnification: mag });
   };
 
