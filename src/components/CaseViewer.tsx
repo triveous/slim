@@ -427,15 +427,14 @@ function Viewer(props: ViewerProps): JSX.Element | null {
           </Menu.SubMenu>
           {clinicalTrialMenu}
 
-          {/* commented out this menu item as it is of no use for us */}
-          {/* <Menu.SubMenu key="slides" title="Slides">
+          <Menu.SubMenu key="slides" title="Slides">
             <SlideList
               clients={props.clients}
               metadata={slides}
               selectedSeriesInstanceUID={selectedSeriesInstanceUID}
               onSeriesSelection={handleSeriesSelection}
             />
-          </Menu.SubMenu> */}
+          </Menu.SubMenu>
 
           <Menu.SubMenu key="imageLabel" title="Image Labels">
             {srInstances.map((sr) => (
