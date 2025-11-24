@@ -12,7 +12,7 @@ window.config = {
   ],
   oidc: {
     authority: "https://staging.meningioma.midaspacs.in/auth/realms/midas", // ${OIDC_AUTHORITY}",
-    clientId: "slim", //${OIDC_CLIENT_ID}",
+    clientId: "pacs-ui", //${OIDC_CLIENT_ID}",
     scope: "openid profile email",
     grantType: "authorization_code",
     endSessionEndpoint:
