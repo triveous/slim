@@ -2037,10 +2037,12 @@ class SlideViewer extends React.Component<SlideViewerProps, SlideViewerState> {
     page: number,
     pageSize: number
   ) => {
-    const url = new URL("https://advisory.midas.iisc.ac.in/be/public/ontology");
+    const url = new URL(
+      "https://advisory-staging.midas.iisc.ac.in/be/public/ontology/meningioma/search"
+    );
     url.searchParams.set("page", String(page));
-    url.searchParams.set("pageSize", String(pageSize));
-    if (q) url.searchParams.set("search", q);
+    url.searchParams.set("size", String(pageSize));
+    if (q) url.searchParams.set("query", q);
     const res = await fetch(url.toString(), { signal: this.findAbort?.signal });
     if (!res.ok) throw new Error(`Ontology fetch failed: ${res.status}`);
     const json = (await res.json()) as {
@@ -2071,7 +2073,7 @@ class SlideViewer extends React.Component<SlideViewerProps, SlideViewerState> {
       try {
         const { items, total } = await this.fetchFindingsPage(
           value,
-          1,
+          0,
           this.state.findingPageSize
         );
         const hasMore = this.state.findingPageSize < total;
