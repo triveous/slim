@@ -2439,6 +2439,10 @@ class SlideViewer extends React.Component<SlideViewerProps, SlideViewerState> {
             ) as any
           );
         });
+
+      this.setState({
+        isReportModalVisible: false,
+      });
     }
   };
 
