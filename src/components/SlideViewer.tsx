@@ -2038,7 +2038,7 @@ class SlideViewer extends React.Component<SlideViewerProps, SlideViewerState> {
     pageSize: number
   ) => {
     const url = new URL(
-      "https://advisory-staging.midas.iisc.ac.in/be/public/ontology/meningioma/search"
+      "https://advisory.midas.iisc.ac.in/be/public/ontology/meningioma/search"
     );
     url.searchParams.set("page", String(page));
     url.searchParams.set("size", String(pageSize));

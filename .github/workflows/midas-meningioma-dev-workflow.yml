@@ -35,4 +35,4 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
-            REACT_APP_CONFIG=midas-dev
+            REACT_APP_CONFIG=midas-prod
