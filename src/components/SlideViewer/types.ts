@@ -130,4 +130,8 @@ export interface SlideViewerState {
   // magnification widget
   availableMagnifications: Array<{ level: number; mag: number; label: string }>;
   maxDigitalZoom?: number;
+  currentMagnification: number;
+  objectivePower: number;
+  pixelSpacing: number; // in mm
+  resolution: number;
 }
