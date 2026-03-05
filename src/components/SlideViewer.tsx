@@ -2708,7 +2708,7 @@ class SlideViewer extends React.Component<SlideViewerProps, SlideViewerState> {
     const maxMag = Math.max(objective, 100);
     if (targetMag > maxMag) targetMag = maxMag;
 
-    const targetResolution = objective / targetMag;
+    const targetResolution = objective / (targetMag * 2);
 
     console.log(
       `Attempting zoom to ${targetMag}x (Resolution: ${targetResolution})`,
@@ -2834,7 +2834,7 @@ class SlideViewer extends React.Component<SlideViewerProps, SlideViewerState> {
 
     // --- STEP 3: METADATA EXTRACTION ---
     let objectivePower = 40;
-    let pixelSpacing = 0.00025;
+    let pixelSpacing = 0.00023;
 
     try {
       // Try to get metadata from viewer, or fallback to map properties if specific to implementation
@@ -4479,7 +4479,6 @@ class SlideViewer extends React.Component<SlideViewerProps, SlideViewerState> {
 
     // Define standard pathology zoom levels
     const zoomLevels = [1.25, 2.5, 5, 10, 20, 40, 80, 100];
-    console.log("objective", objective);
 
     // Filter levels that are valid for this specific scan
     // (e.g., if scan is 40x, don't show 60x or 80x)
