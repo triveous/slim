@@ -1,5 +1,5 @@
 /**
- * Magnification calculation utilities for DICOM WSI
+ * Magnification calculation utilities for DICOM WSI not used
  */
 
 class MagnificationUtils {
