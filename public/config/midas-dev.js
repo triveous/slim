@@ -5,18 +5,18 @@ window.config = {
     {
       id: "midas-dev",
       // This must match the proxy location configured for the web server
-      url: "https://hub.midashealth.in/dcm4chee-arc/aets/DCM4CHEE/rs",
+      url: "https://staging.midas.iisc.ac.in/dcm4chee-arc/aets/DCM4CHEE/rs",
       upgradeInsecureRequests: true, // Enable automatic HTTP -> HTTPS upgrade
       write: true,
     },
   ],
   oidc: {
-    authority: "https://hub.midashealth.in/auth/realms/midas", // ${OIDC_AUTHORITY}",
-    clientId: "slim", //${OIDC_CLIENT_ID}",
+    authority: "https://staging.midas.iisc.ac.in/auth/realms/midas", // ${OIDC_AUTHORITY}",
+    clientId: "pacs-ui", //${OIDC_CLIENT_ID}",
     scope: "openid profile email",
     grantType: "authorization_code",
     endSessionEndpoint:
-      "https://hub.midashealth.in/auth/realms/midas/protocol/openid-connect/logout", //${OIDC_LOGOUT}",
+      "https://staging.midas.iisc.ac.in/auth/realms/midas/protocol/openid-connect/logout", //${OIDC_LOGOUT}",
   },
   disableWorklist: false,
   disableAnnotationTools: false,
