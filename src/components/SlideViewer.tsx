@@ -2052,11 +2052,11 @@ class SlideViewer extends React.Component<SlideViewerProps, SlideViewerState> {
     pageSize: number,
   ) => {
     const url = new URL(
-      "https://advisory.midas.iisc.ac.in/be/public/ontology/meningioma/search",
+      "https://advisory.midas.iisc.ac.in/be/public/ontology",
     );
     url.searchParams.set("page", String(page));
     url.searchParams.set("size", String(pageSize));
-    if (q) url.searchParams.set("query", q);
+    if (q) url.searchParams.set("search", q);
     const res = await fetch(url.toString(), { signal: this.findAbort?.signal });
     if (!res.ok) throw new Error(`Ontology fetch failed: ${res.status}`);
     const json = (await res.json()) as {
