@@ -2087,7 +2087,7 @@ class SlideViewer extends React.Component<SlideViewerProps, SlideViewerState> {
       try {
         const { items, total } = await this.fetchFindingsPage(
           value,
-          0,
+          1,
           this.state.findingPageSize,
         );
         const hasMore = this.state.findingPageSize < total;
