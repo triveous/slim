@@ -5,18 +5,18 @@ window.config = {
     {
       id: "midas-prod",
       // This must match the proxy location configured for the web server
-      url: "https://spdc.midaspacs.in/dcm4chee-arc/aets/DCM4CHEE/rs",
+      url: "https://sriher.midaspacs.in/dcm4chee-arc/aets/DCM4CHEE/rs",
       upgradeInsecureRequests: true, // Enable automatic HTTP -> HTTPS upgrade
       write: true,
     },
   ],
   oidc: {
-    authority: "https://spdc.midaspacs.in/auth/realms/midas", // ${OIDC_AUTHORITY}",
+    authority: "https://sriher.midaspacs.in/auth/realms/midas", // ${OIDC_AUTHORITY}",
     clientId: "pacs-ui", //${OIDC_CLIENT_ID}",
     scope: "openid profile email",
     grantType: "authorization_code",
     endSessionEndpoint:
-      "https://spdc.midaspacs.in/auth/realms/midas/protocol/openid-connect/logout", //${OIDC_LOGOUT}",
+      "https://sriher.midaspacs.in/auth/realms/midas/protocol/openid-connect/logout", //${OIDC_LOGOUT}",
   },
   disableWorklist: false,
   disableAnnotationTools: false,
